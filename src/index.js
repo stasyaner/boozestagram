@@ -42,12 +42,27 @@ class DataLoader {
 
     for (let i = 0; i < batchSize; i += 1) {
       const imageNum = Math.floor(Math.random() * 35);
+      const imageData = this.imagesArr[imageNum].getContext('2d').getImageData(0, 0,
+        this.imagesArr[imageNum].width, this.imagesArr[imageNum].height);
+      const arr32 = new Float32Array(28 * 28 * 3);
+
+      for (let j = 0; j < imageData.data.length / 4; j += 1) {
+        arr32[j] = imageData.data[j] / 255;
+        arr32[j + 1] = imageData.data[j] / 255;
+        arr32[j + 2] = imageData.data[j] / 255;
+      }
 
       if (xs) {
-        xs = tf.concat([xs, tf.fromPixels(this.imagesArr[imageNum])]).asType('float32');
+        xs = tf.concat([xs, tf.tensor2d(arr32, [1, 28 * 28 * 3])]);
       } else {
-        xs = tf.fromPixels(this.imagesArr[imageNum]).asType('float32');
+        xs = tf.tensor2d(arr32, [1, 28 * 28 * 3]);
       }
+
+      // if (xs) {
+      //   xs = tf.concat([xs, tf.fromPixels(this.imagesArr[imageNum])]).asType('float32');
+      // } else {
+      //   xs = tf.fromPixels(this.imagesArr[imageNum]).asType('float32');
+      // }
 
       let testL;
       if (this.labelsArr[imageNum] === 0) {
@@ -98,12 +113,12 @@ model.compile({
   metrics: ['accuracy'],
 });
 
-const BATCH_SIZE = 64;
+const BATCH_SIZE = 50;
 const TRAIN_BATCHES = 150;
 
 // Every few batches, test accuracy over many examples. Ideally, we'd compute
 // accuracy over the whole test set, but for performance we'll use a subset.
-const TEST_BATCH_SIZE = 100;
+const TEST_BATCH_SIZE = 200;
 const TEST_ITERATION_FREQUENCY = 5;
 
 async function train() {
@@ -162,6 +177,7 @@ async function showPredictions() {
     const axis = 1;
     const labels = Array.from(batch.labels.argMax(axis).dataSync());
     const predictions = Array.from(output.argMax(axis).dataSync());
+    console.log(`labels: ${labels}, pred: ${predictions}`);
 
     // ui.showTestResults(batch, predictions, labels, testExamples);
   });
