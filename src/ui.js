@@ -12,33 +12,33 @@ export function trainingLog(message) {
   console.log(message);
 }
 
-export function showTestResults(batch, predictions, labels, testExamples) {
+export function showTestResults(batch, predictions, labels) {
   statusElement.innerText = 'Testing...';
 
-  //const testExamples = batch.xs.shape[0];
-  for (let i = 0; i < testExamples; i++) {
-    // const image = batch.xs.slice([i, 0, 0], [1, batch.xs.shape[1]]);
-    //
-    // const div = document.createElement('div');
-    // div.className = 'pred-container';
-    //
-    // const canvas = document.createElement('canvas');
-    // draw(image.flatten(), canvas);
-    //
-    // const pred = document.createElement('div');
-    //
+  const testExamples = batch.xs.shape[0];
+  batch.xs.print();
+  for (let i = 0; i < testExamples; i += 1) {
+    const image = batch.xs.slice([i, 0], [1, batch.xs.shape[1]]);
+
+    const div = document.createElement('div');
+    div.className = 'pred-container';
+
+    const canvas = document.createElement('canvas');
+    draw(image.flatten(), canvas);
+
+    const pred = document.createElement('div');
+
     const prediction = predictions[i];
     const label = labels[i];
-    console.log(`label: ${label}, prediction: ${prediction}`);
-    // const correct = prediction === label;
-    //
-    // pred.className = `pred ${(correct ? 'pred-correct' : 'pred-incorrect')}`;
-    // pred.innerText = `pred: ${prediction}`;
-    //
-    // div.appendChild(pred);
-    // div.appendChild(canvas);
-    //
-    // imagesElement.appendChild(div);
+    const correct = prediction === label;
+
+    pred.className = `pred ${(correct ? 'pred-correct' : 'pred-incorrect')}`;
+    pred.innerText = `pred: ${prediction ? 'wine' : 'beer'}`;
+
+    div.appendChild(pred);
+    div.appendChild(canvas);
+
+    imagesElement.appendChild(div);
   }
 }
 
@@ -90,12 +90,16 @@ export function draw(image, canvas) {
   const ctx = canvas.getContext('2d');
   const imageData = new ImageData(width, height);
   const data = image.dataSync();
-  for (let i = 0; i < height * width; ++i) {
-    const j = i * 4;
-    imageData.data[j + 0] = data[i] * 255;
-    imageData.data[j + 1] = data[i] * 255;
-    imageData.data[j + 2] = data[i] * 255;
-    imageData.data[j + 3] = 255;
+  let j = 0;
+  let k = 0;
+  for (let i = 0; i < height * width * 4; i += 1) {
+    if ((i > 0) && (i % (3 + k) === 0)) {
+      imageData.data[i] = 255;
+      k += 4;
+      continue;
+    }
+    imageData.data[i] = data[j] * 255;
+    j += 1;
   }
   ctx.putImageData(imageData, 0, 0);
 }
