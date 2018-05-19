@@ -172,7 +172,6 @@ async function showPredictions() {
     const axis = 1;
     const labels = Array.from(batch.labels.argMax(axis).dataSync());
     const predictions = Array.from(output.argMax(axis).dataSync());
-    console.log(`labels: ${labels}, pred: ${predictions}`);
 
     ui.showTestResults(batch, predictions, labels);
   });
@@ -189,6 +188,7 @@ async function mnist() {
   await load();
   await train();
   showPredictions();
+  //await model.save('downloads://booz_model');
 }
 
 mnist();
