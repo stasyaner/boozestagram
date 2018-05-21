@@ -1,6 +1,2 @@
 .DS_Store
 node_modules
-public/*
-!public/index.html
-!public/booze_dataset
-public/booze_dataset/.DS_Store
