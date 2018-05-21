@@ -187,8 +187,8 @@ async function load() {
 async function mnist() {
   await load();
   await train();
-  showPredictions();
-  //await model.save('downloads://booz_model');
+  await showPredictions();
+  await model.save('downloads://booz_model');
 }
 
 mnist();
