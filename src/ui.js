@@ -16,7 +16,6 @@ export function showTestResults(batch, predictions, labels) {
   statusElement.innerText = 'Testing...';
 
   const testExamples = batch.xs.shape[0];
-  batch.xs.print();
   for (let i = 0; i < testExamples; i += 1) {
     const image = batch.xs.slice([i, 0], [1, batch.xs.shape[1]]);
 
